@@ -6,7 +6,7 @@ spring:
     name: user-service
 
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:user-management-service}?options=-c%20TimeZone=America/Lima
+    url: jdbc:postgresql://localhost:5432/${DB_NAME:user-management-service}?options=-c%20TimeZone=America/Lima
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:admin}
     driver-class-name: org.postgresql.Driver
@@ -21,8 +21,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 jwt:
-  secret: ${JWT_SECRET:default_jwt_secret_key_must_be_at_least_64_characters_long_for_security}
-  expiration-ms: ${JWT_EXPIRATION_MS:3600000}
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration-ms: 3600000
     
   cloud:
     function:

@@ -8,26 +8,38 @@ El ecosistema está fragmentado en componentes independientes pero cohesivos par
 
 ```mermaid
 graph TD;
+    %% -- Nodos Principales --
     Client((🖥️ Cliente)) -.->|Peticiones HTTP| Gateway[🚪 Gateway Service :8080];
-    Gateway -->|Valida Token JWT| GW_Auth[Módulo Seguridad GW];
     
-    subgraph Microservicios de Negocio
-        Gateway -.->|Rutas: /api/auth/**| Auth[🔐 Auth Service :8081];
-        Gateway -.->|Rutas: /api/users/**| Users[👤 User Management Service :8082];
+    %% -- Gateway --
+    Gateway -->|Intercepta y Valida Token| GW_Auth{{🛡️ Filtro de Seguridad}};
+    
+    %% -- Microservicios internos --
+    subgraph Microservicios de Negocio [Microservicios Core]
+        GW_Auth -.->|Enruta: /api/auth/**| Auth[🔐 Auth Service :8081];
+        GW_Auth -.->|Enruta: /api/users/**| Users[👤 User Management Service :8082];
         
-        Auth -->|Llamada Feign/HTTP| Users;
+        Auth -->|Petición Interna HTTP| Users;
     end
     
-    subgraph Servicios Asíncronos
-        Users -.->|Mensaje AMQP| RMQ[(🐇 RabbitMQ)];
-        Auth -.->|Mensaje AMQP| RMQ;
-        RMQ -.->|Consume Mensajes| Audit[📝 Audit Service :8083];
+    %% -- Mensajería Asíncrona --
+    subgraph Servicios Asíncronos [Procesamiento Asíncrono - EDA]
+        direction TB
+        Users -.->|Publica Mensaje AMQP| RMQ[(🐇 RabbitMQ)];
+        Auth -.->|Publica Mensaje AMQP| RMQ;
+        RMQ -.->|Consume Mensaje AMQP| Audit[📝 Audit Service :8083];
     end
     
-    subgraph Bases de Datos
-        Users ~~~ DB_U[(🐘 DB: users)];
-        Audit ~~~ DB_A[(🐘 DB: audit)];
+    %% -- Bases de Datos --
+    subgraph Bases de Datos [Persistencia PostgreSQL]
+        DB_U[(🐘 DB: user-management)];
+        DB_A[(🐘 DB: audit-services)];
     end
+    
+    %% -- Conexiones a BD --
+    Users ==>|JPA / Lee & Escribe| DB_U;
+    Audit ==>|JPA / Guarda Logs| DB_A;
+    
 ```
 
 ### 🧩 Componentes y Funciones

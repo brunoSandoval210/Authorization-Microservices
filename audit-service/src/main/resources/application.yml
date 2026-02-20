@@ -5,9 +5,9 @@ spring:
   application:
     name: audit-service
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:audit-services}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:admin}
+    url: jdbc:postgresql://localhost:5432/audit-services
+    username: postgres
+    password: admin
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -29,5 +29,5 @@ spring:
           group: audit-service-group
 
 jwt:
-  secret: ${JWT_SECRET:default_jwt_secret_key_must_be_at_least_64_characters_long_for_security}
-  expiration-ms: ${JWT_EXPIRATION_MS:3600000}
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration-ms: 3600000
