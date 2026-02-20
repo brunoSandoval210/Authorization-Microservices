@@ -1,0 +1,43 @@
+server:
+  port: 8080
+
+spring:
+  jpa:
+    auditing:
+      enabled: false
+  application:
+    name: gateway-service
+  web:
+    resources:
+      add-mappings: false
+    mvc:
+      problemdetails:
+        enabled: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web: DEBUG
+
+jwt:
+  secret: ${JWT_SECRET:default_jwt_secret_key_must_be_at_least_64_characters_long_for_security}
+  expiration-ms: ${JWT_EXPIRATION_MS:3600000}
+
+application:
+  services:
+    auth-service:
+      url: http://localhost:8081
+    user-service:
+      url: http://localhost:8082
+    audit-service:
+      url: http://localhost:8083
+
+  cloud:
+    function:
+      definition: auditLogConsumer;errorLogConsumer
+    stream:
+      bindings:
+        auditLog-out-0:
+          destination: auditLog-out-0
+        errorLog-out-0:
+          destination: errorLog-out-0

@@ -1,0 +1,33 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: audit-service
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:audit-services}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:admin}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  cloud:
+    function:
+      definition: auditLogConsumer;errorLogConsumer
+    stream:
+      bindings:
+        auditLogConsumer-in-0:
+          destination: auditLog-out-0
+          group: audit-service-group
+        errorLogConsumer-in-0:
+          destination: errorLog-out-0
+          group: audit-service-group
+
+jwt:
+  secret: ${JWT_SECRET:default_jwt_secret_key_must_be_at_least_64_characters_long_for_security}
+  expiration-ms: ${JWT_EXPIRATION_MS:3600000}

@@ -1,0 +1,28 @@
+server:
+  port: 8081
+
+spring:
+  application:
+   name: auth-service
+  jpa:
+    auditing:
+      enabled: false
+
+application:
+  services:
+    user-service:
+      url: http://localhost:8082/internal/users
+      
+  cloud:
+    function:
+      definition: auditLogConsumer;errorLogConsumer
+    stream:
+      bindings:
+        auditLog-out-0:
+          destination: auditLog-out-0
+        errorLog-out-0:
+          destination: errorLog-out-0
+
+jwt:
+  secret: ${JWT_SECRET:default_jwt_secret_key_must_be_at_least_64_characters_long_for_security}
+  expiration-ms: ${JWT_EXPIRATION_MS:3600000}
